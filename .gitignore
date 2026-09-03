@@ -1,0 +1,11 @@
+# Segredos — nunca commitar
+credentials.json
+
+# Artefatos de execução local do Streamlit
+streamlit.log
+streamlit_run.log
+streamlit.pid
+
+# Python
+__pycache__/
+*.pyc

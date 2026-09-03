@@ -2,3 +2,4 @@ streamlit>=1.60
 pandas
 requests
 plotly
+openpyxl
