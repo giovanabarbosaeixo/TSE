@@ -432,10 +432,7 @@ def render_pos_eleicao():
         """
 <div class="tse-pos-intro">
   ⚠️ Números batem com o estado atual da apuração — ainda em contagem, o
-  retrato muda a cada atualização. O que exige comparar com a eleição de
-  2018, a composição anterior do Senado/governos, pesquisas pré-eleição ou
-  gênero do candidato não dá pra tirar dos arquivos de apuração do TSE —
-  fica no checklist ao final desta aba.
+  retrato muda a cada atualização.
 </div>""",
         unsafe_allow_html=True,
     )
@@ -652,14 +649,6 @@ def render_pos_eleicao():
             fig_regiao.update_yaxes(gridcolor=EIXO["borda"], zeroline=False)
             st.plotly_chart(fig_regiao, width="stretch", theme=None, config={"displayModeBar": False})
 
-            st.markdown('<div class="tse-pos-cat">Mapa comparado à eleição de 2018 (quais estados mudaram de lado)</div>', unsafe_allow_html=True)
-            st.caption(
-                "⚠️ Não dá pra responder só com os arquivos de apuração de 2022 — "
-                "eles não trazem o resultado de 2018. Precisaria cruzar com o "
-                "resumo por UF da eleição anterior (mesma lógica desta página, "
-                "aplicada ao ciclo `ele2018`)."
-            )
-
         st.markdown('<div class="tse-pos-cat">Abstenção por estado (Presidente)</div>', unsafe_allow_html=True)
         if df_pres is not None:
             df_abst = df_pres.dropna(subset=["abstencao_pct"]).sort_values("abstencao_pct", ascending=False)
@@ -792,26 +781,6 @@ def render_pos_eleicao():
             fig_sen_margem.update_xaxes(gridcolor=EIXO["borda"], zeroline=False)
             st.plotly_chart(fig_sen_margem, width="stretch", theme=None, config={"displayModeBar": False})
 
-        st.markdown('<div class="tse-pos-cat">Senado — o que os arquivos de apuração não respondem</div>', unsafe_allow_html=True)
-        ano_ciclo_sen = int(CICLO.replace("ele", ""))
-        st.markdown(
-            f"""
-    <ul class="tse-pos-list">
-      <li><span class="tse-pos-num">·</span><span>Quais senadores titulares não se reelegeram — exige saber quem
-      já era o senador titular em cada estado (eleito em {ano_ciclo_sen - 8}, mesma renovação de vagas
-      recontestada agora), dado que não vem no arquivo de apuração.</span></li>
-      <li><span class="tse-pos-num">·</span><span>Cadeiras ganhas/perdidas por partido vs. a legislatura anterior —
-      exige a composição do Senado antes da eleição, e o arquivo só traz a coligação (não o partido) do vencedor.</span></li>
-      <li><span class="tse-pos-num">·</span><span>Quantos eleitos são estreantes no cargo — mesma limitação: precisa
-      do histórico de quem já ocupou a cadeira.</span></li>
-      <li><span class="tse-pos-num">·</span><span>Estados onde o Senado "virou de espectro" — exigiria um mapeamento
-      partido → posição política, que este painel não tem.</span></li>
-      <li><span class="tse-pos-num">·</span><span>Quantas mulheres foram eleitas — o arquivo de apuração não traz o
-      gênero do candidato (só nome, número, coligação e votos).</span></li>
-    </ul>""",
-            unsafe_allow_html=True,
-        )
-
     with tab_gov:
         st.markdown('<div class="tse-pos-cat">Governador — decidido em que turno</div>', unsafe_allow_html=True)
         try:
@@ -869,18 +838,6 @@ def render_pos_eleicao():
                 faltando_gov = df_gov[df_gov["vencedor"].isna()]
                 if not faltando_gov.empty:
                     st.caption("Sem resposta do TSE ainda para: " + ", ".join(faltando_gov["uf"].tolist()))
-
-        st.markdown('<div class="tse-pos-cat">Governador — o que os arquivos de apuração não respondem</div>', unsafe_allow_html=True)
-        st.markdown(
-            """
-    <ul class="tse-pos-list">
-      <li><span class="tse-pos-num">·</span><span>Quais governadores titulares perderam a reeleição — exige saber
-      quem era o titular em cada estado antes da eleição, dado que não vem no arquivo de apuração.</span></li>
-      <li><span class="tse-pos-num">·</span><span>Quantos governos estaduais mudaram de partido — exige a coligação/
-      partido vencedor da eleição anterior (2018) para comparar.</span></li>
-    </ul>""",
-            unsafe_allow_html=True,
-        )
 
     with tab_geral:
         st.markdown(
@@ -973,38 +930,6 @@ def render_pos_eleicao():
                 unsafe_allow_html=True,
             )
 
-        st.markdown('<div class="tse-pos-cat">Maiores "zebras" (favorito nas pesquisas que perdeu)</div>', unsafe_allow_html=True)
-        st.caption(
-            "⚠️ Não dá pra responder com os arquivos de apuração — eles só têm o "
-            "resultado das urnas, não pesquisas eleitorais pré-eleição. Precisaria "
-            "cruzar com uma base externa de pesquisas (ex.: agregador de institutos) "
-            "por estado/cargo."
-        )
-
-        st.markdown('<div class="tse-pos-cat">Checklist — o que fica de fora só com dados de apuração</div>', unsafe_allow_html=True)
-        st.markdown(
-            """
-    <ul class="tse-pos-list">
-      <li><span class="tse-pos-num">1</span><span><strong>Comparação com a eleição de 2018</strong> (Presidente,
-      Governador, Senado) — precisa do resumo por UF do ciclo `ele2018`, que este painel não consulta.</span></li>
-      <li><span class="tse-pos-num">2</span><span><strong>Titulares que perderam a reeleição</strong> (Governador e
-      Senado) — precisa saber quem já ocupava o cargo antes da eleição.</span></li>
-      <li><span class="tse-pos-num">3</span><span><strong>Cadeiras por partido vs. legislatura anterior</strong> e
-      <strong>estreantes no cargo</strong> (Senado) — precisa da composição anterior do Senado; o arquivo de apuração
-      só traz a coligação do vencedor, não o partido isolado.</span></li>
-      <li><span class="tse-pos-num">4</span><span><strong>Espectro político</strong> (Presidente, Governador, Senado)
-      — precisaria de um mapeamento partido → posição política; este painel só compara coligações, não ideologia.</span></li>
-      <li><span class="tse-pos-num">5</span><span><strong>Gênero dos eleitos</strong> (quantas mulheres no Senado) —
-      o arquivo de apuração não traz esse campo.</span></li>
-      <li><span class="tse-pos-num">6</span><span><strong>Abstenção por município</strong> — os arquivos consultados
-      aqui são agregados por UF; abstenção por município exigiria buscar os dados de cada um dos +5.000 municípios
-      individualmente.</span></li>
-      <li><span class="tse-pos-num">7</span><span><strong>"Zebras" (favorito que perdeu)</strong> — precisa de dados
-      de pesquisas eleitorais pré-eleição, que não vêm dos arquivos de apuração do TSE.</span></li>
-    </ul>""",
-            unsafe_allow_html=True,
-        )
-
 
 def render_interesse_clientes():
     try:
@@ -1029,10 +954,6 @@ def render_interesse_clientes():
     <div class="tse-stat-label">Nomes casados</div>
     <div class="tse-stat-value">{len(encontrados)}</div>
   </div>
-  <div class="tse-stat">
-    <div class="tse-stat-label">Pendências</div>
-    <div class="tse-stat-value">{len(pendencias)}</div>
-  </div>
 </div>
 """,
         unsafe_allow_html=True,
@@ -1045,9 +966,6 @@ def render_interesse_clientes():
   sucesso contra o cadastro de parlamentares em exercício.</span></li>
   <li><span class="tse-pos-num">·</span><span><strong>Nomes casados</strong> — total de nomes das
   listas dos clientes que foram identificados (achamos exatamente quem é: cargo, partido, UF).</span></li>
-  <li><span class="tse-pos-num">·</span><span><strong>Pendências</strong> — nomes que estavam nas
-  listas mas não bateram com ninguém no cadastro atual — na maioria porque a pessoa não é mais
-  parlamentar (ex-deputado, ex-senador). Lista completa mais abaixo nesta página.</span></li>
 </ul>""",
         unsafe_allow_html=True,
     )
@@ -1078,42 +996,6 @@ def render_interesse_clientes():
     <thead>
       <tr>
         <th>Cliente</th><th>Parlamentar</th><th>Cargo</th><th>UF</th><th>Pauta</th><th>Como casou</th>
-      </tr>
-    </thead>
-    <tbody>{linhas_html}</tbody>
-  </table>
-</div>""",
-            unsafe_allow_html=True,
-        )
-
-    st.markdown('<div class="tse-pos-cat">Pendências — não casaram, revisar na mão</div>', unsafe_allow_html=True)
-    st.caption(
-        "⚠️ Nomes que a planilha do cliente lista mas que não bateram com ninguém em "
-        'exercício — na maioria dos casos porque a pessoa não está mais no cargo '
-        '("Ex-parlamentar"), mas vale conferir de vez em quando se não é a planilha '
-        "renomeando cabeçalho de novo, ou alguém saindo do cadastro."
-    )
-    if pendencias.empty:
-        st.caption("Nenhuma pendência — tudo casou.")
-    else:
-        linhas_html = "".join(
-            f"""
-<tr>
-  <td class="tse-snap-cand">{esc(r.cliente)}</td>
-  <td>{esc(r.nome_interesse)}</td>
-  <td>{esc(r.cargo_partido_uf_bruto) or "—"}</td>
-  <td>{esc(r.pauta)}</td>
-  <td class="tse-snap-sub">{esc(r.motivo)}</td>
-</tr>"""
-            for r in pendencias.sort_values(["cliente"]).itertuples()
-        )
-        st.markdown(
-            f"""
-<div class="tse-snap-wrap">
-  <table class="tse-snap-table">
-    <thead>
-      <tr>
-        <th>Cliente</th><th>Nome (como está na planilha)</th><th>Cargo/Partido/UF</th><th>Pauta</th><th>Motivo</th>
       </tr>
     </thead>
     <tbody>{linhas_html}</tbody>
